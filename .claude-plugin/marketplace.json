@@ -1,0 +1,21 @@
+{
+  "name": "didmar-skills",
+  "owner": {
+    "name": "didmar"
+  },
+  "metadata": {
+    "description": "Claude Code skills by didmar",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "didmar",
+      "description": "Skills by didmar",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/forked-repo-git-practices"
+      ]
+    }
+  ]
+}
