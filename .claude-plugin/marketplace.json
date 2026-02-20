@@ -12,7 +12,7 @@
       "name": "didmar",
       "description": "Skills by didmar",
       "source": "./",
-      "strict": false,
+      "strict": true,
       "skills": [
         "./skills/forked-repo-git-practices"
       ]
