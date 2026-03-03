@@ -13,7 +13,7 @@ description: >
 
 ## Core Principles
 
-- **Never commit directly to your fork's `main`/`master`** — keep it a clean mirror of upstream
+- **Never commit directly to your fork's default branch** (e.g. `main`, `master`, `develop`) — keep it a clean mirror of upstream
 - **Always branch from fresh upstream HEAD** — not from your fork's potentially-stale default branch
 - **One branch per PR** — keep concerns separate for easy review and revert
 
@@ -26,30 +26,40 @@ git remote add upstream https://github.com/ORIGINAL_OWNER/REPO.git
 git remote -v   # verify: origin (your fork) + upstream (original)
 ```
 
+## Determine the Default Branch
+
+After cloning, the default branch is automatically checked out. To confirm the default branch name for a remote:
+
+```bash
+git remote show upstream | grep 'HEAD branch'
+```
+
+Throughout this guide, `<default>` is used as a placeholder for the upstream default branch name (typically `main`, `master`, or `develop`). Replace it with the actual branch name in your commands.
+
 ## Syncing Your Fork with Upstream
 
 Run this before starting any new branch:
 
 ```bash
 git fetch upstream
-git checkout main          # or master / develop — whatever upstream's default branch is
-git merge upstream/main    # fast-forward only; conflicts here mean your main diverged
-git push origin main       # keep fork's default branch in sync on GitHub
+git checkout <default>
+git merge upstream/<default>    # fast-forward only; conflicts here mean your default branch diverged
+git push origin <default>       # keep fork's default branch in sync on GitHub
 ```
 
-> **Tip:** Never rebase your fork's `main` onto upstream — always merge. Rebasing rewrites
-> history and causes divergence between your local and remote `main`.
+> **Tip:** Never rebase your fork's default branch onto upstream — always merge. Rebasing rewrites
+> history and causes divergence between your local and remote default branch.
 
 ## Creating a Branch for a PR
 
-Always create feature branches **from upstream HEAD**, not from your (potentially stale) local `main`:
+Always create feature branches **from upstream HEAD**, not from your (potentially stale) local default branch:
 
 ```bash
 git fetch upstream
-git checkout -b feat/my-feature upstream/main
+git checkout -b feat/my-feature upstream/<default>
 ```
 
-This guarantees the branch starts at the exact same commit as upstream, even if you forgot to sync your local `main` first.
+This guarantees the branch starts at the exact same commit as upstream, even if you forgot to sync your local default branch first.
 
 ### Branch Naming Conventions
 
@@ -67,9 +77,9 @@ Use `kebab-case`, keep names short but descriptive. Include the issue number whe
 ## PR Submission Workflow
 
 ```bash
-# 1. Branch from upstream (never from your local main)
+# 1. Branch from upstream (never from your local default branch)
 git fetch upstream
-git checkout -b feat/my-feature upstream/main
+git checkout -b feat/my-feature upstream/<default>
 
 # 2. Make commits with clear, atomic messages
 git add -p                          # prefer staging hunks over `git add .`
@@ -77,12 +87,12 @@ git commit -m "feat: concise description of change"
 
 # 3. Before opening PR, rebase onto latest upstream to avoid conflicts
 git fetch upstream
-git rebase upstream/main
+git rebase upstream/<default>
 
 # 4. Push to your fork
 git push origin feat/my-feature
 
-# 5. Open PR on GitHub: base = upstream/main  ←  compare = your-fork/feat/my-feature
+# 5. Open PR on GitHub: base = upstream/<default>  ←  compare = your-fork/feat/my-feature
 ```
 
 ## Keeping a PR Branch Updated During Review
@@ -91,7 +101,7 @@ If upstream advances while your PR is under review:
 
 ```bash
 git fetch upstream
-git rebase upstream/main            # replay your commits on top of latest upstream
+git rebase upstream/<default>            # replay your commits on top of latest upstream
 git push origin feat/my-feature --force-with-lease   # safe force-push
 ```
 
@@ -101,11 +111,11 @@ the branch since your last fetch, preventing accidental overwrites.
 ## After Your PR is Merged
 
 ```bash
-# Sync fork's main with upstream (your commits are now in upstream/main)
-git checkout main
+# Sync fork's default branch with upstream (your commits are now in upstream/<default>)
+git checkout <default>
 git fetch upstream
-git merge upstream/main
-git push origin main
+git merge upstream/<default>
+git push origin <default>
 
 # Clean up the feature branch
 git branch -d feat/my-feature
@@ -121,7 +131,7 @@ branch. **Never push this as a PR.**
 ```bash
 # Build the integration branch from scratch
 git fetch upstream
-git checkout -b local/dev upstream/main   # or rebuild: git checkout local/dev && git reset --hard upstream/main
+git checkout -b local/dev upstream/<default>   # or rebuild: git checkout local/dev && git reset --hard upstream/<default>
 
 # Merge each unmerged feature branch into it
 git merge feat/feature-a
@@ -133,7 +143,7 @@ git merge feat/feature-c
 The branch diagram looks like this:
 
 ```
-upstream/main  ──A──B──C──────────────────
+upstream/<default>  ──A──B──C──────────────────
                         \
 feat/feature-a           ──a1──a2
 feat/feature-b           ──b1
@@ -144,15 +154,15 @@ local/dev      ──A──B──C──a1──a2──b1──c1──c2─�
 
 ### When Upstream Merges One of Your PRs
 
-Say `feat/feature-a` gets merged upstream. Now `upstream/main` contains it.
-Rebuild `local/dev` — the merged feature comes in automatically via `upstream/main`,
+Say `feat/feature-a` gets merged upstream. Now `upstream/<default>` contains it.
+Rebuild `local/dev` — the merged feature comes in automatically via `upstream/<default>`,
 and you only re-merge the remaining unmerged branches:
 
 ```bash
 git fetch upstream
 git checkout local/dev
-git reset --hard upstream/main   # discard old integration branch, start fresh from upstream
-git merge feat/feature-b         # feature-a already in upstream/main, skip it
+git reset --hard upstream/<default>   # discard old integration branch, start fresh from upstream
+git merge feat/feature-b             # feature-a already in upstream/<default>, skip it
 git merge feat/feature-c
 ```
 
@@ -166,11 +176,11 @@ git push origin --delete feat/feature-a
 ### Checking Which Branches Are Already Merged Upstream
 
 ```bash
-# Shows commits in feat/X that are NOT yet in upstream/main (empty = already merged)
-git log upstream/main..feat/feature-a --oneline
+# Shows commits in feat/X that are NOT yet in upstream/<default> (empty = already merged)
+git log upstream/<default>..feat/feature-a --oneline
 
-# List all local branches not yet merged into upstream/main
-git branch --no-merged upstream/main
+# List all local branches not yet merged into upstream/<default>
+git branch --no-merged upstream/<default>
 ```
 
 ### Key Rules for the Integration Branch
@@ -185,9 +195,9 @@ git branch --no-merged upstream/main
 
 | Pitfall | Why it's a problem | Fix |
 |---|---|---|
-| Committing to fork's `main` | Causes divergence; future syncs become painful | Keep `main` pristine; always use feature branches |
-| Branching from stale local `main` | Your branch silently misses upstream changes | Always `git fetch upstream` before branching |
+| Committing to fork's default branch | Causes divergence; future syncs become painful | Keep the default branch pristine; always use feature branches |
+| Branching from stale local default branch | Your branch silently misses upstream changes | Always `git fetch upstream` before branching |
 | Using `--force` on a shared branch | Can destroy collaborators' work | Use `--force-with-lease` |
-| Merging upstream into a PR branch | Creates noisy merge commits in PR history | Use `git rebase upstream/main` instead |
-| Opening a PR from `main` | Blocks you from working on other things while PR is open | Always use a dedicated feature branch |
+| Merging upstream into a PR branch | Creates noisy merge commits in PR history | Use `git rebase upstream/<default>` instead |
+| Opening a PR from the default branch | Blocks you from working on other things while PR is open | Always use a dedicated feature branch |
 | Forgetting to delete merged branches | Accumulates stale branches, confusing state | Delete both local and remote after merge |
