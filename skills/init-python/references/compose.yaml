@@ -1,0 +1,12 @@
+services:
+  app:
+    build:
+      context: .
+      target: dev
+    volumes:
+      - .:/app
+  app-prod:
+    profiles: [prod]
+    build:
+      context: .
+      target: prod

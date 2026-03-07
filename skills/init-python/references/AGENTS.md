@@ -1,0 +1,1 @@
+- Read [CONTRIBUTING.md](CONTRIBUTING.md) for code style and conventions
