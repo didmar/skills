@@ -14,7 +14,9 @@
       "source": "./",
       "strict": true,
       "skills": [
-        "./skills/forked-repo-git-practices"
+        "./skills/forked-repo-git-practices",
+        "./skills/init-python",
+        "./skills/setup-deploy-key"
       ]
     }
   ]
