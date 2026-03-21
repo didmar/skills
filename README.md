@@ -31,3 +31,19 @@ Usage: `/didmar:init-python` or `/didmar:init-python lib` for library layout.
 Generate an SSH deploy key for the current project and configure git to use it. Idempotent.
 
 Creates an ed25519 SSH key pair, adds an SSH config entry with a project-specific host alias, updates the git remote URL, and displays the public key with instructions for adding it to GitHub.
+
+### `toulminify`
+
+Extract and structure arguments from text or URLs using Toulmin's model of argumentation.
+
+Accepts a URL, file path, or raw text as input and identifies every distinct argument, breaking each down into claim, grounds, warrant, backing, qualifier, and rebuttal.
+
+Usage: `/didmar:toulminify <url|filepath|text>` or `/didmar:toulminify --json <url|filepath|text>` for JSON output.
+
+### `recover-sessions`
+
+Recover Claude Code sessions after moving a project to a new directory.
+
+When a project is moved, Claude Code sessions become invisible because they are stored under a path-derived directory in `~/.claude/projects/`. This skill copies sessions from the old path's storage into the current path's storage.
+
+Usage: `/didmar:recover-sessions ~/old-project-path` or `/didmar:recover-sessions --dry-run ~/old-project-path` to preview.
