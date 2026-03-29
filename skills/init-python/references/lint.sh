@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 set -euo pipefail
-ruff check . --fix && ruff format .
+stepdown check . && ruff check . --fix && ruff format .

@@ -1,6 +1,6 @@
 ---
 name: init-python
-description: Bootstrap a new Python project with the Astral toolchain (UV, Ruff, ty) and pre-commit hooks. Opinionated.
+description: Bootstrap a new Python project with the Astral toolchain (UV, Ruff, ty), flake8-stepdown, and pre-commit hooks. Opinionated.
 disable-model-invocation: true
 model: haiku
 ---
@@ -36,7 +36,7 @@ Note: UV converts names like `dummy-library` → `dummy_library`. Use the actual
 
 5. Install dev dependencies:
 
-uv add --dev pytest ruff ty pre-commit
+uv add --dev pytest ruff ty pre-commit flake8-stepdown
 
 **Note**: `uv init` generates `.gitignore` and `README.md` (plus `main.py` for app layout, or `src/<package>/__init__.py` and `py.typed` for library layout).
 
@@ -70,7 +70,7 @@ uv run pre-commit install
 
 14. Run `uv run pre-commit run --all-files` to verify all hooks pass. If ruff auto-fixes anything, re-stage with `git add -A`.
 
-15. Create initial commit with message "Initial project setup with UV, Ruff, ty, and pre-commit".
+15. Create initial commit with message "Initial project setup with UV, Ruff, ty, flake8-stepdown, and pre-commit".
 
 16. Use the AskUserQuestion tool to ask the user which optional extras they want. Present options using AskUserQuestion (use multiSelect, split across up to two questions if needed since the tool supports max 4 options per question). The user can pick multiple, all, or none:
 
