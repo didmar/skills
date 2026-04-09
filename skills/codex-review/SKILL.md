@@ -9,12 +9,23 @@ user-invocable: true
 
 Run OpenAI Codex CLI to review all uncommitted changes in the current repo, then synthesize the findings into an actionable plan.
 
+## Arguments
+
+This skill accepts an optional argument: custom review instructions. If provided, these instructions are appended to the default Codex review prompt to focus the review on specific concerns (e.g., `/codex-review focus on error handling and thread safety`).
+
 ## Steps
 
-1. **Run Codex review** — use the legacy Landlock sandbox to avoid bwrap failures in VMs/containers:
+1. **Run Codex review** — use the legacy Landlock sandbox to avoid bwrap failures in VMs/containers. If the user provided custom instructions via the skill argument, append them to the review command using `--instructions`:
 
+   Without custom instructions:
    ```bash
    codex -c 'features.use_legacy_landlock=true' --dangerously-bypass-approvals-and-sandbox review --uncommitted 2>&1 \
+     | sed -n '/^codex$/,$ { /^codex$/d; p }' | awk '!seen[$0]++'
+   ```
+
+   With custom instructions (where `$INSTRUCTIONS` is the user-provided argument):
+   ```bash
+   codex -c 'features.use_legacy_landlock=true' --dangerously-bypass-approvals-and-sandbox review "$INSTRUCTIONS" 2>&1 \
      | sed -n '/^codex$/,$ { /^codex$/d; p }' | awk '!seen[$0]++'
    ```
 

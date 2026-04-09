@@ -9,13 +9,25 @@ user-invocable: true
 
 Run OpenCode CLI to review all uncommitted changes in the current repo, then synthesize the findings into an actionable plan.
 
+## Arguments
+
+This skill accepts an optional argument: custom review instructions. If provided, these instructions are appended to the review prompt to focus the review on specific concerns (e.g., `/opencode-review focus on error handling and thread safety`).
+
 ## Steps
 
-1. **Run OpenCode review** — use `opencode run` with a review prompt and auto-approved permissions:
+1. **Run OpenCode review** — use `opencode run` with a review prompt and auto-approved permissions. If the user provided custom instructions via the skill argument, append them to the prompt after "If there are no issues, say so.":
 
+   Without custom instructions:
    ```bash
    opencode run --dangerously-skip-permissions \
      "Run git diff HEAD to see all uncommitted changes. Review the diff for bugs, correctness issues, security problems, style violations, and improvements. For each finding list: file path, line number, severity (P0-P3), one-line summary, and what should change. If there are no issues, say so." \
+     2>&1
+   ```
+
+   With custom instructions (where `$INSTRUCTIONS` is the user-provided argument):
+   ```bash
+   opencode run --dangerously-skip-permissions \
+     "Run git diff HEAD to see all uncommitted changes. Review the diff for bugs, correctness issues, security problems, style violations, and improvements. For each finding list: file path, line number, severity (P0-P3), one-line summary, and what should change. If there are no issues, say so. Additionally, pay special attention to: $INSTRUCTIONS" \
      2>&1
    ```
 

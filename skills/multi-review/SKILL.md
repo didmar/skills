@@ -9,13 +9,17 @@ user-invocable: true
 
 Run three independent code reviews in parallel using different AI tools, then merge the results into a single deduplicated action plan.
 
+## Arguments
+
+This skill accepts an optional argument: custom review instructions. If provided, these instructions are forwarded to each reviewer to focus the review on specific concerns (e.g., `/multi-review focus on error handling and thread safety`).
+
 ## Steps
 
-1. **Launch 3 review agents in parallel** — use a single message with 3 `Agent` tool calls so they execute concurrently. Each agent runs one reviewer:
+1. **Launch 3 review agents in parallel** — use a single message with 3 `Agent` tool calls so they execute concurrently. Each agent runs one reviewer. If the user provided custom instructions via the skill argument, pass them along to each sub-skill:
 
-   - **Agent 1 — Claude:** Invoke the `/review` skill and return the findings.
-   - **Agent 2 — OpenCode:** Invoke the `/opencode-review` skill and return the findings.
-   - **Agent 3 — Codex:** Invoke the `/codex-review` skill and return the findings.
+   - **Agent 1 — Claude:** Invoke the `/review` skill (with the custom instructions appended as argument, if any) and return the findings.
+   - **Agent 2 — OpenCode:** Invoke the `/opencode-review` skill (with the custom instructions appended as argument, if any) and return the findings.
+   - **Agent 3 — Codex:** Invoke the `/codex-review` skill (with the custom instructions appended as argument, if any) and return the findings.
 
    Use a 180s timeout per agent. If a reviewer times out or fails, note it but proceed with the others.
 
